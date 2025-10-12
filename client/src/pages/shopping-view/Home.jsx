@@ -64,7 +64,7 @@ const ShoppingHome = () => {
 
       {/* 🌟 Featured Products Section */}
       <section className="px-4 sm:px-8 md:px-12 lg:px-20 xl:px-28 py-12">
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3 text-center">
+        <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-3 text-center">
           Featured Products
         </h2>
         <div className="h-1 w-24 bg-gradient-to-r from-green-600 to-emerald-600 mx-auto mb-10 rounded-full"></div>
