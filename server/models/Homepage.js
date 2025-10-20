@@ -110,8 +110,29 @@ const AboutUsSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
+// Video Schema
+const VideoSchema = new mongoose.Schema({
+  videoUrl: {
+    type: String,
+    required: true,
+  },
+  thumbnailUrl: {
+    type: String,
+    required: true,
+  },
+  order: {
+    type: Number,
+    default: 0,
+  },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
+}, { timestamps: true });
+
 export const Banner = mongoose.model("Banner", BannerSchema);
 export const DiscountBanner = mongoose.model("DiscountBanner", DiscountBannerSchema);
 export const FeaturedProduct = mongoose.model("FeaturedProduct", FeaturedProductSchema);
 export const CustomerReview = mongoose.model("CustomerReview", CustomerReviewSchema);
-export const AboutUs = mongoose.model("AboutUs", AboutUsSchema); 
+export const AboutUs = mongoose.model("AboutUs", AboutUsSchema);
+export const Video = mongoose.model("Video", VideoSchema);

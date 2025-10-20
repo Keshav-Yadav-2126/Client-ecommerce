@@ -4,18 +4,36 @@ import { Card, CardContent, CardFooter } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { categoryOptionsMap } from "@/config/index";
-import { ShoppingCart } from "lucide-react";
-// import { useNavigate } from 'react-router-dom';
+import { ShoppingCart, Zap } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 
 function ShoppingProjectTile({
   product,
   handleAddToCart,
   handleGetProductDetails,
 }) {
+  const navigate = useNavigate();
+
   const handleProductClick = () => {
     if (typeof handleGetProductDetails === "function") {
       handleGetProductDetails(product._id);
     }
+  };
+
+  // New buy now handler for multi-page checkout
+  const handleBuyNow = (e) => {
+    e.stopPropagation();
+    // Store product info in localStorage for direct purchase
+    const buyNowProduct = {
+      productId: product._id,
+      title: product.title,
+      image: product.image,
+      price: product.salePrice > 0 ? product.salePrice : product.price,
+      quantity: 1,
+      stock: product.stock,
+    };
+    localStorage.setItem("buyNowProduct", JSON.stringify(buyNowProduct));
+    navigate("/shop/address");
   };
 
   return (
@@ -100,13 +118,29 @@ function ShoppingProjectTile({
                   </span>
                 )}
               </div>
+
+              {/* Add to Cart Button - Mobile Only */}
+              {product?.stock > 0 && (
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAddToCart(product?._id, product?.stock);
+                  }}
+                  className="sm:hidden w-full mt-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white shadow-lg transition-all duration-200 text-xs py-2 flex items-center justify-center gap-2"
+                >
+                  <ShoppingCart className="w-4 h-4" />
+                  <span>Add to cart</span>
+                </Button>
+              )}
             </CardContent>
           </div>
+
+
         </div>
       </div>
 
-      {/* Footer with button - Desktop/Tablet only */}
-      <CardFooter className="hidden sm:block p-4 pt-0">
+      {/* Footer with buttons - Desktop/Tablet only */}
+      <CardFooter className="hidden sm:block p-4 pt-0 space-y-2">
         {product?.stock === 0 ? (
           <Button
             className="w-full bg-gray-400 cursor-not-allowed text-base py-2"
@@ -115,16 +149,28 @@ function ShoppingProjectTile({
             Out Of Stock
           </Button>
         ) : (
-          <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleAddToCart(product?._id, product?.stock);
-            }}
-            className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white shadow-lg transition-all duration-200 text-base py-2 flex items-center justify-center gap-2"
-          >
-            <ShoppingCart className="w-4 h-4" />
-            <span>Add to cart</span>
-          </Button>
+          <>
+            {/* Add to Cart Button */}
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleAddToCart(product?._id, product?.stock);
+              }}
+              className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white shadow-lg transition-all duration-200 text-base py-2 flex items-center justify-center gap-2"
+            >
+              <ShoppingCart className="w-4 h-4" />
+              <span>Add to cart</span>
+            </Button>
+
+            {/* Buy Now Button */}
+            <Button
+              onClick={handleBuyNow}
+              className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg transition-all duration-200 text-base py-2 flex items-center justify-center gap-2"
+            >
+              <Zap className="w-4 h-4" />
+              <span>Buy Now</span>
+            </Button>
+          </>
         )}
       </CardFooter>
     </Card>

@@ -4,9 +4,11 @@ import {
   DiscountBanner,
   FeaturedProduct,
   CustomerReview,
+  AboutUs,
+  Video,
 } from "../../models/Homepage.js";
 import Product from "../../models/Product-schema.js";
-import { AboutUs } from "../../models/Homepage.js";
+import { handleUploadImage, handleUploadVideo, upload } from "../../helpers/cloudinary.js";
 
 // ===== BANNER MANAGEMENT =====
 export const addBanner = async (req, res) => {
@@ -339,6 +341,98 @@ export const getAboutUs = async (req, res) => {
   }
 };
 
+// ===== VIDEO MANAGEMENT =====
+export const addVideo = async (req, res) => {
+  try {
+    const { videoUrl, thumbnailUrl, order } = req.body;
+
+    // Validate URLs are provided
+    if (!videoUrl || !thumbnailUrl) {
+      return res.status(400).json({
+        success: false,
+        message: "Video URL and thumbnail URL are required",
+      });
+    }
+
+    // Validate URLs are valid Cloudinary URLs
+    if (!videoUrl.includes("cloudinary") || !thumbnailUrl.includes("cloudinary")) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Cloudinary URLs",
+      });
+    }
+
+    // Create video record
+    const video = new Video({
+      videoUrl,
+      thumbnailUrl,
+      order: order || 0,
+      isActive: true,
+    });
+
+    await video.save();
+
+    console.log("✅ Video saved to database:", video._id);
+
+    res.status(201).json({
+      success: true,
+      message: "Video added successfully",
+      data: video,
+    });
+  } catch (error) {
+    console.error("❌ Add video error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error adding video: " + error.message,
+    });
+  }
+};
+
+export const getAllVideos = async (req, res) => {
+  try {
+    const videos = await Video.find({}).sort({ order: 1, createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      data: videos,
+    });
+  } catch (error) {
+    console.error("Get videos error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching videos",
+    });
+  }
+};
+
+export const deleteVideo = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const video = await Video.findByIdAndDelete(id);
+
+    if (!video) {
+      return res.status(404).json({
+        success: false,
+        message: "Video not found",
+      });
+    }
+
+    console.log("✅ Video deleted:", id);
+
+    res.status(200).json({
+      success: true,
+      message: "Video deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete video error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error deleting video",
+    });
+  }
+};
+
 // ===== CUSTOMER REVIEWS MANAGEMENT =====
 export const addReview = async (req, res) => {
   try {
@@ -388,54 +482,28 @@ export const getAllReviews = async (req, res) => {
   }
 };
 
-// export const getApprovedReviews = async (req, res) => {
-//   try {
-//     const reviews = await CustomerReview.find({
-//       isApproved: true,
-//       isVisible: true,
-//     })
-//       .populate("productId")
-//       .sort({ order: 1, createdAt: -1 })
-//       .limit(10);
-
-//     res.status(200).json({
-//       success: true,
-//       data: reviews,
-//     });
-//   } catch (error) {
-//     console.error("Get approved reviews error:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Error fetching reviews",
-//     });
-//   }
-// };
-
 export const getApprovedReviews = async (req, res) => {
   try {
     const reviews = await CustomerReview.find({ isApproved: true })
       .populate('productId')
       .sort({ createdAt: -1 });
-    
-    res.status(200).json({ 
-      success: true, 
-      data: reviews 
+
+    res.status(200).json({
+      success: true,
+      data: reviews
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: "Error fetching approved reviews" 
+    res.status(500).json({
+      success: false,
+      message: "Error fetching approved reviews"
     });
   }
 };
 
-
-// controllers/homepageController.js
 export const approveReview = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Update review as approved
     const review = await CustomerReview.findByIdAndUpdate(
       id,
       { isApproved: true },
@@ -456,7 +524,6 @@ export const approveReview = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
-
 
 export const toggleReviewVisibility = async (req, res) => {
   try {
@@ -508,22 +575,6 @@ export const deleteReview = async (req, res) => {
     });
   }
 };
-
-// export const approveReview = async (req, res) => {
-//   const { id } = req.params;
-//   const review = await CustomerReview.findByIdAndUpdate(
-//     id,
-//     { isApproved: true },
-//     { new: true }
-//   );
-//   if (!review)
-//     return res
-//       .status(404)
-//       .json({ success: false, message: "Review not found" });
-//   res
-//     .status(200)
-//     .json({ success: true, message: "Review approved", data: review });
-// };
 
 export const rejectReview = async (req, res) => {
   const { id } = req.params;

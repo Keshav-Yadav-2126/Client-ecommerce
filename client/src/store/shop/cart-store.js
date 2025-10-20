@@ -3,7 +3,7 @@ import axios from "axios";
 import { create } from "zustand";
 
 const useCartStore = create((set, get) => ({
-  cartItems: [],
+  cartItems: { items: [] },
   isLoading: false,
   error: null,
   totalAmount: 0,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DialogContent } from '../ui/dialog';
 import { Badge } from '../ui/badge';
@@ -57,25 +57,25 @@ const ShoppingOrderDetailsView = ({ orderDetails }) => {
   };
 
   return (
-    <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto bg-gradient-to-br from-yellow-50/50 to-white">
-      <div className="space-y-6 p-4">
+    <DialogContent className="w-[95vw] max-w-[650px] max-h-[90vh] overflow-y-auto bg-gradient-to-br from-yellow-50/50 to-white">
+      <div className="space-y-4 sm:space-y-6 p-3 sm:p-4">
         {/* Header */}
-        <div className="flex items-center gap-3 pb-4 border-b border-yellow-200">
-          <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
-            <Package className="w-6 h-6 text-white" />
+        <div className="flex items-center gap-2 sm:gap-3 pb-4 border-b border-yellow-200">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
+            <Package className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+            <h2 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
               Order Details
             </h2>
-            <p className="text-sm text-gray-600">Track your order information</p>
+            <p className="text-xs sm:text-sm text-gray-600">Track your order information</p>
           </div>
         </div>
 
         {/* Order Info Card */}
         <Card className="border-yellow-200 shadow-sm">
-          <div className="p-4 space-y-3">
-            <div className="flex items-start justify-between">
+          <div className="p-3 sm:p-4 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
               <div className="flex items-center gap-2">
                 <ShoppingBag className="w-4 h-4 text-yellow-600" />
                 <div>
@@ -83,12 +83,12 @@ const ShoppingOrderDetailsView = ({ orderDetails }) => {
                   <p className="font-mono font-semibold text-sm">{orderDetails?.data._id}</p>
                 </div>
               </div>
-              <Badge className={`${getStatusColor(orderDetails?.data.orderStatus)} text-white`}>
+              <Badge className={`${getStatusColor(orderDetails?.data.orderStatus)} text-white text-xs`}>
                 {orderDetails?.data.orderStatus}
               </Badge>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-yellow-600" />
                 <div>
@@ -112,9 +112,9 @@ const ShoppingOrderDetailsView = ({ orderDetails }) => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-2 border-t border-yellow-100">
-              <span className="text-gray-700 font-medium">Total Amount</span>
-              <span className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-2 border-t border-yellow-100 gap-2">
+              <span className="text-gray-700 font-medium text-sm sm:text-base">Total Amount</span>
+              <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
                 ₹{orderDetails?.data.totalAmount?.toFixed(2)}
               </span>
             </div>
@@ -132,15 +132,15 @@ const ShoppingOrderDetailsView = ({ orderDetails }) => {
         {canRequestRefund && (
           <>
             <Separator className="bg-yellow-200" />
-            <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-lg p-4">
-              <div className="flex items-center justify-between">
+            <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-lg p-3 sm:p-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                  <h4 className="font-semibold text-gray-800 mb-1">Need a refund?</h4>
-                  <p className="text-sm text-gray-600">Request a refund with product image and reason</p>
+                  <h4 className="font-semibold text-gray-800 mb-1 text-sm sm:text-base">Need a refund?</h4>
+                  <p className="text-xs sm:text-sm text-gray-600">Request a refund with product image and reason</p>
                 </div>
                 <Button
                   onClick={handleRequestRefund}
-                  className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold px-6"
+                  className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold px-4 sm:px-6 w-full sm:w-auto"
                 >
                   <RefreshCw className="w-4 h-4 mr-2" />
                   Request Refund
@@ -154,31 +154,31 @@ const ShoppingOrderDetailsView = ({ orderDetails }) => {
 
         {/* Order Items */}
         <div>
-          <h3 className="font-bold text-lg text-gray-800 mb-3 flex items-center gap-2">
-            <Package className="w-5 h-5 text-yellow-600" />
+          <h3 className="font-bold text-base sm:text-lg text-gray-800 mb-3 flex items-center gap-2">
+            <Package className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />
             Order Items
           </h3>
           <div className="space-y-3">
             {orderDetails?.data.cartItems && orderDetails?.data.cartItems.length > 0 ? (
               orderDetails?.data.cartItems.map((item, index) => (
                 <Card key={index} className="border-yellow-200 shadow-sm">
-                  <div className="p-3 flex items-center justify-between">
+                  <div className="p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div className="flex items-center gap-3 flex-1">
                       <img
                         src={item.image || '/api/placeholder/60/60'}
                         alt={item.title}
-                        className="w-14 h-14 rounded-lg object-cover border-2 border-yellow-200"
+                        className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg object-cover border-2 border-yellow-200"
                       />
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-sm text-gray-800 truncate">{item.title}</p>
-                        <div className="flex items-center gap-3 mt-1">
+                        <div className="flex items-center gap-2 sm:gap-3 mt-1">
                           <span className="text-xs text-gray-600">Qty: {item.quantity}</span>
                           <span className="text-xs text-gray-400">|</span>
                           <span className="text-sm font-bold text-yellow-600">₹{item.price}</span>
                         </div>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right sm:text-right">
                       <p className="text-xs text-gray-500">Subtotal</p>
                       <p className="font-bold text-gray-800">₹{(item.price * item.quantity).toFixed(2)}</p>
                     </div>
@@ -195,13 +195,13 @@ const ShoppingOrderDetailsView = ({ orderDetails }) => {
 
         {/* Shipping Info */}
         <div>
-          <h3 className="font-bold text-lg text-gray-800 mb-3 flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-yellow-600" />
+          <h3 className="font-bold text-base sm:text-lg text-gray-800 mb-3 flex items-center gap-2">
+            <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />
             Delivery Address
           </h3>
           <Card className="border-yellow-200 shadow-sm bg-gradient-to-br from-yellow-50/50 to-white">
-            <div className="p-4 space-y-2">
-              <p className="font-semibold text-gray-800">{user?.userName || user?.name}</p>
+            <div className="p-3 sm:p-4 space-y-2">
+              <p className="font-semibold text-gray-800 text-sm sm:text-base">{user?.userName || user?.name}</p>
               <p className="text-sm text-gray-700">{orderDetails?.data?.addressInfo?.address}</p>
               <p className="text-sm text-gray-700">
                 {orderDetails?.data?.addressInfo?.city}, {orderDetails?.data?.addressInfo?.pincode}

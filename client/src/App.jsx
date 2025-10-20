@@ -22,6 +22,10 @@ import PaymentSuccessPage from "./pages/shopping-view/payment-success";
 import SearchProducts from "./pages/shopping-view/Search";
 import { NotificationProvider } from "./contexts/NotificationProvider";
 import AdminFeatures from "./pages/admin-view/Features";
+// New multi-page checkout imports
+import AddressPage from "./pages/shopping-view/AddressPage";
+import OrderSummaryPage from "./pages/shopping-view/OrderSummaryPage";
+import PaymentPage from "./pages/shopping-view/PaymentPage";
 
 function App() {
   const auth = useAuthStore();
@@ -104,6 +108,10 @@ function App() {
             <Route path="payment-success" element={<PaymentSuccessPage />} />
             <Route path="search" element={<SearchProducts />} />
             <Route path="refund-request" element={<RefundRequestRoute />} />
+            {/* New multi-page checkout routes */}
+            <Route path="address" element={<AddressPage />} />
+            <Route path="order-summary" element={<OrderSummaryPage />} />
+            <Route path="payment" element={<PaymentPage />} />
           </Route>
         </Routes>
       </div>

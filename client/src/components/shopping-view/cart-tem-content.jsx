@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import useShoppingStore from "@/store/shop/product-store";
 import { Card } from "../ui/card";
 
-const CartItemContent = ({ cartItem }) => {
+const CartItemContent = ({ cartItem, handleUpdateQuantity: customHandleUpdateQuantity, handleDeleteItem: customHandleDeleteItem }) => {
   const { user } = useAuthStore();
   const { deleteCartItem, updateCartQty } = useCartStore();
   const { productList } = useShoppingStore();
@@ -15,24 +15,30 @@ const CartItemContent = ({ cartItem }) => {
   async function handleCartItemDelete(e, getCartItem) {
     e.stopPropagation();
     e.preventDefault();
-    
+
+    if (customHandleDeleteItem) {
+      // Use custom delete handler if provided (for buy now flow)
+      customHandleDeleteItem(getCartItem.productId || getCartItem._id);
+      return;
+    }
+
     if (!user || !user.id) {
       toast.error("Please login to continue");
       return;
     }
-    
+
     const productId = getCartItem?.product || getCartItem?.productId;
-    
+
     if (!productId) {
       toast.error("Invalid product");
       return;
     }
-    
+
     const data = await deleteCartItem({
       userId: user.id,
       productId: productId,
     });
-    
+
     if (data?.success) {
       toast.success("Item removed from cart");
     } else {
@@ -41,49 +47,65 @@ const CartItemContent = ({ cartItem }) => {
   }
 
   async function handleUpdateQuantity(getCartItem, typeOfAction) {
+    if (customHandleUpdateQuantity) {
+      // Use custom update handler if provided (for buy now flow)
+      const productId = getCartItem.productId || getCartItem._id;
+      const newQuantity = typeOfAction === "plus"
+        ? getCartItem.quantity + 1
+        : getCartItem.quantity - 1;
+
+      if (newQuantity < 1) {
+        toast.warning("Minimum quantity is 1");
+        return;
+      }
+
+      customHandleUpdateQuantity(productId, newQuantity);
+      return;
+    }
+
     if (!user || !user.id) {
       toast.error("Please login to continue");
       return;
     }
-    
+
     const productId = getCartItem?.product || getCartItem?.productId;
-    
+
     if (!productId) {
       toast.error("Invalid product");
       return;
     }
-    
+
     if (typeOfAction === "plus") {
       const currentProduct = productList.find(
         (product) => product._id === productId
       );
-      
+
       if (currentProduct) {
         const currentStock = currentProduct.stock;
-        
+
         if (getCartItem.quantity + 1 > currentStock) {
           toast.warning(`Only ${currentStock} items available in stock`);
           return;
         }
       }
     }
-    
-    const newQuantity = typeOfAction === "plus" 
-      ? getCartItem.quantity + 1 
+
+    const newQuantity = typeOfAction === "plus"
+      ? getCartItem.quantity + 1
       : getCartItem.quantity - 1;
-    
+
     if (newQuantity < 1) {
       toast.warning("Minimum quantity is 1");
       return;
     }
-    
+
     try {
       const data = await updateCartQty({
         userId: user.id,
         productId: productId,
         quantity: newQuantity,
       });
-      
+
       if (data?.success) {
         toast.success(
           typeOfAction === "plus" ? "Quantity increased" : "Quantity decreased",
@@ -151,15 +173,15 @@ const CartItemContent = ({ cartItem }) => {
               {cartItem?.salePrice > 0 ? (
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-bold text-green-600 text-base sm:text-lg">
-                    ${(cartItem.salePrice * cartItem.quantity).toFixed(2)}
+                    ₹{(cartItem.salePrice * cartItem.quantity).toFixed(2)}
                   </span>
                   <span className="text-xs text-gray-500 line-through">
-                    ${(cartItem.price * cartItem.quantity).toFixed(2)}
+                    ₹{(cartItem.price * cartItem.quantity).toFixed(2)}
                   </span>
                 </div>
               ) : (
                 <span className="font-bold text-gray-800 text-base sm:text-lg">
-                  ${(cartItem.price * cartItem.quantity).toFixed(2)}
+                  ₹{(cartItem.price * cartItem.quantity).toFixed(2)}
                 </span>
               )}
             </div>

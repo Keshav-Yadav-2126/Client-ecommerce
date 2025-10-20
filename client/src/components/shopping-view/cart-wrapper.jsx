@@ -21,9 +21,16 @@ const CartWrapper = ({ cartItems, setOpenCartSheet }) => {
   const gstAmount = subtotal * gstRate;
   const totalAmount = subtotal + gstAmount;
   
+  // Commented out old single-page checkout navigation
+  // const handleCheckout = () => {
+  //   setOpenCartSheet(false);
+  //   navigate("/shop/checkout");
+  // };
+
+  // New multi-page checkout navigation
   const handleCheckout = () => {
     setOpenCartSheet(false);
-    navigate("/shop/checkout");
+    navigate("/shop/address");
   };
   
   return (

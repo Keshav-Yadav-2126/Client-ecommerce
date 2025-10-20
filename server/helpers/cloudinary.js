@@ -9,7 +9,12 @@ cloudinary.config({
 });
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 100 * 1024 * 1024, // 100MB limit for videos
+  },
+});
 
 async function handleUploadImage(file) {
   // file is a data URI string (from controller)
@@ -19,4 +24,12 @@ async function handleUploadImage(file) {
   return result;
 }
 
-export { handleUploadImage, upload };
+async function handleUploadVideo(file) {
+  // file is a data URI string (from controller)
+  const result = await cloudinary.uploader.upload(file, {
+    resource_type: 'video',
+  });
+  return result;
+}
+
+export { handleUploadImage, handleUploadVideo, upload };

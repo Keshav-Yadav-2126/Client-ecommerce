@@ -43,6 +43,24 @@ const AboutUsSection = ({ about = "" }) => {
       <div className="container mx-auto px-4">
         <div className="max-w-5xl mx-auto mb-8 sm:mb-16">
           <div className="text-center space-y-3 sm:space-y-6">
+            <div className="max-w-4xl mx-auto mt-8 sm:mt-16 text-center">
+              <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-12 text-white shadow-2xl">
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-4">
+                  Ready to Start Shopping?
+                </h3>
+                <p className="text-sm sm:text-lg mb-4 sm:mb-6 text-green-50">
+                  Join thousands of satisfied customers and experience the best
+                  online shopping.
+                </p>
+                <a
+                  href="/shop/listing"
+                  className="inline-block bg-white text-green-600 font-semibold px-6 py-2 sm:px-8 sm:py-3 rounded-full hover:bg-gray-100 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base"
+                >
+                  Explore Products
+                </a>
+              </div>
+            </div>
+
             <div className="inline-block">
               <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-2">
                 About Us
@@ -119,7 +137,7 @@ const AboutUsSection = ({ about = "" }) => {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto mt-8 sm:mt-16 text-center">
+        {/* <div className="max-w-4xl mx-auto mt-8 sm:mt-16 text-center">
           <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-12 text-white shadow-2xl">
             <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-4">
               Ready to Start Shopping?
@@ -134,7 +152,7 @@ const AboutUsSection = ({ about = "" }) => {
               Explore Products
             </a>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

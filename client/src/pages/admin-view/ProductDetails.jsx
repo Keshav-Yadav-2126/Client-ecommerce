@@ -10,14 +10,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
@@ -27,14 +19,14 @@ import {
   Star, 
   Truck, 
   Shield, 
-  Leaf,
   Award,
   ArrowLeft,
   Plus,
   Minus,
   Upload,
   X,
-  AlertCircle
+  AlertCircle,
+  Package
 } from 'lucide-react';
 import { toast } from 'sonner';
 import useShoppingStore from '@/store/shop/product-store';
@@ -53,7 +45,6 @@ const ProductDetails = () => {
   const { getReviews, addReview, reviews, checkCanReview, canReview, hasPurchased, hasReviewed } = useReviewStore();
   
   const [loading, setLoading] = useState(true);
-  const [selectedSize, setSelectedSize] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
   const [reviewMsg, setReviewMsg] = useState("");
@@ -61,8 +52,6 @@ const ProductDetails = () => {
   const [reviewImages, setReviewImages] = useState([]);
   const [reviewImagesPreview, setReviewImagesPreview] = useState([]);
   const [uploadingImages, setUploadingImages] = useState(false);
-
-  const sizeOptions = ['50ml', '100ml', '250ml', '500ml'];
 
   useEffect(() => {
     if (id) {
@@ -77,10 +66,6 @@ const ProductDetails = () => {
     if (productDetails && user) {
       getReviews(productDetails._id);
       checkCanReview(productDetails._id, user.id || user._id);
-      
-      if (productDetails.size) {
-        setSelectedSize(productDetails.size);
-      }
     }
   }, [productDetails, user, getReviews, checkCanReview]);
 
@@ -113,11 +98,6 @@ const ProductDetails = () => {
   };
 
   const handleAddToCart = async () => {
-    if (!selectedSize) {
-      toast.error('Please select a size');
-      return;
-    }
-
     let getCartItems = [];
     if (Array.isArray(cartItems)) {
       getCartItems = cartItems;
@@ -190,9 +170,10 @@ const ProductDetails = () => {
       setReviewMsg("");
       setReviewImages([]);
       setReviewImagesPreview([]);
-      toast.success(result.message || "Review submitted! It will be visible after admin approval.");
+      toast.success("Review submitted successfully!");
       
-      // Refresh review eligibility
+      // Refresh reviews and check eligibility
+      await getReviews(productDetails._id);
       await checkCanReview(productDetails._id, userId);
     } else {
       toast.error(result?.message || "Failed to add review");
@@ -294,18 +275,18 @@ const ProductDetails = () => {
                 {productDetails.salePrice > 0 ? (
                   <>
                     <span className="text-3xl font-bold text-yellow-600">
-                      ${productDetails.salePrice}
+                      ₹{productDetails.salePrice}
                     </span>
                     <span className="text-xl text-gray-500 line-through">
-                      ${productDetails.price}
+                      ₹{productDetails.price}
                     </span>
                     <Badge className="bg-red-100 text-red-800">
-                      Save ${(productDetails.price - productDetails.salePrice).toFixed(2)}
+                      Save ₹{(productDetails.price - productDetails.salePrice).toFixed(2)}
                     </Badge>
                   </>
                 ) : (
                   <span className="text-3xl font-bold text-yellow-600">
-                    ${productDetails.price}
+                    ₹{productDetails.price}
                   </span>
                 )}
               </div>
@@ -314,20 +295,20 @@ const ProductDetails = () => {
                 {productDetails.description}
               </p>
 
-              {/* Size Selection */}
-              <div className="mb-6">
-                <Label className="text-base font-semibold mb-3 block">Select Size</Label>
-                <Select value={selectedSize} onValueChange={setSelectedSize}>
-                  <SelectTrigger className="w-full bg-white border-yellow-300 focus:border-yellow-500">
-                    <SelectValue placeholder="Choose size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {sizeOptions.map((size) => (
-                      <SelectItem key={size} value={size}>{size}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* Size Display Only - No Selection */}
+              {productDetails.size && (
+                <div className="mb-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Package className="w-5 h-5 text-yellow-600" />
+                    <Label className="text-base font-semibold">Available Size</Label>
+                  </div>
+                  <div className="inline-flex items-center justify-center px-4 py-2 bg-yellow-50 border-2 border-yellow-300 rounded-lg">
+                    <span className="text-lg font-semibold text-yellow-700">
+                      {productDetails.size}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Quantity and Add to Cart */}
@@ -357,6 +338,7 @@ const ProductDetails = () => {
                         <Plus className="h-4 w-4" />
                       </Button>
                     </div>
+                  </div>
                   <span className="text-sm text-gray-600">
                     {productDetails.stock} in stock
                   </span>
@@ -388,7 +370,7 @@ const ProductDetails = () => {
               <Card className="bg-white/60 border-blue-200 text-center p-4">
                 <Truck className="w-6 h-6 mx-auto mb-2 text-blue-600" />
                 <p className="text-sm font-medium">Free Shipping</p>
-                <p className="text-xs text-gray-600">Orders over $50</p>
+                <p className="text-xs text-gray-600">Orders over ₹500</p>
               </Card>
               <Card className="bg-white/60 border-blue-200 text-center p-4">
                 <Shield className="w-6 h-6 mx-auto mb-2 text-blue-600" />
@@ -410,7 +392,7 @@ const ProductDetails = () => {
             <AccordionItem value="ingredients" className="border-yellow-200 bg-white/50 rounded-lg mb-4 px-6">
               <AccordionTrigger className="text-lg font-semibold text-gray-800 hover:text-yellow-700">
                 <div className="flex items-center gap-2">
-                  <Leaf className="w-5 h-5 text-yellow-600" />
+                  <Package className="w-5 h-5 text-yellow-600" />
                   Ingredients
                 </div>
               </AccordionTrigger>

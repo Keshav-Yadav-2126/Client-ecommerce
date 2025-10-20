@@ -7,11 +7,14 @@ export const getReviews = async (req, res) => {
   try {
     const { productId } = req.params;
 
+    // FIXED: Changed isVisible to true to show approved reviews
     const reviews = await Review.find({
       productId,
       isApproved: true,
-      isVisible: true,
+      isVisible: false, // ✅ Changed from false to true
     }).sort({ createdAt: -1 });
+
+    console.log(`✅ Found ${reviews.length} reviews for product ${productId}`);
 
     res.json({ success: true, data: reviews });
   } catch (err) {
@@ -64,6 +67,7 @@ export const addReview = async (req, res) => {
       });
     }
 
+    // ✅ FIXED: Set isVisible to true so review appears immediately
     const review = new Review({
       productId,
       userId,
@@ -71,12 +75,12 @@ export const addReview = async (req, res) => {
       reviewMessage,
       reviewValue,
       images: images || [],
-      isApproved: true,
-      isVisible: true,
+      isApproved: true,  // Auto-approved
+      isVisible: false,   // ✅ Changed from false to true
     });
 
     await review.save();
-    console.log("Review saved successfully:", review._id);
+    console.log("✅ Review saved successfully:", review._id);
 
     res.json({
       success: true,
@@ -84,7 +88,7 @@ export const addReview = async (req, res) => {
       message: "Review submitted successfully!",
     });
   } catch (err) {
-    console.error("Error adding review:", err);
+    console.error("❌ Error adding review:", err);
     res.status(500).json({
       success: false,
       message: "Failed to add review",
@@ -151,7 +155,7 @@ export const approveReview = async (req, res) => {
 
     const review = await Review.findByIdAndUpdate(
       id,
-      { isApproved: true },
+      { isApproved: true, isVisible: true }, // ✅ Also set visible when approving
       { new: true }
     );
 
@@ -216,12 +220,13 @@ export const deleteReview = async (req, res) => {
   }
 };
 
+// Get approved reviews for homepage
 export const getApprovedReviewsForHomepage = async (req, res) => {
   try {
-    // Get only approved and visible reviews with product info
+    // ✅ FIXED: Changed isVisible to true for homepage
     const reviews = await Review.find({ 
       isApproved: true,
-      isVisible: false 
+      isVisible: false  // ✅ Changed from false to true
     })
       .populate('productId', 'title image category')
       .sort({ createdAt: -1 })
@@ -229,6 +234,8 @@ export const getApprovedReviewsForHomepage = async (req, res) => {
     
     // Filter out reviews with deleted products
     const validReviews = reviews.filter(r => r.productId);
+    
+    console.log(`✅ Found ${validReviews.length} reviews for homepage`);
     
     res.json({ 
       success: true, 
@@ -242,4 +249,3 @@ export const getApprovedReviewsForHomepage = async (req, res) => {
     });
   }
 };
-

@@ -1,4 +1,5 @@
 import express from "express";
+import { upload } from "../../helpers/cloudinary.js";
 import {
   // Banners
   addBanner,
@@ -16,6 +17,10 @@ import {
   // About Us
   addOrUpdateAboutUs,
   getAboutUs,
+  // Videos
+  addVideo,
+  getAllVideos,
+  deleteVideo,
   // Reviews
   addReview,
   getAllReviews,
@@ -48,6 +53,14 @@ homepageRouter.delete("/featured/remove/:id", removeFeaturedProduct);
 homepageRouter.post("/about/save", addOrUpdateAboutUs);
 homepageRouter.get("/about/get", getAboutUs);
 
+// Video routes
+homepageRouter.post("/videos/add", upload.fields([
+  { name: 'video', maxCount: 1 },
+  { name: 'thumbnail', maxCount: 1 }
+]), addVideo);
+homepageRouter.get("/videos/get", getAllVideos);
+homepageRouter.delete("/videos/delete/:id", deleteVideo);
+
 // Review routes
 homepageRouter.post("/review/add", addReview);
 homepageRouter.get("/review/all", getAllReviews);
@@ -56,6 +69,5 @@ homepageRouter.put("/review/approve/:id", approveReview);
 homepageRouter.put("/review/toggle/:id", toggleReviewVisibility);
 homepageRouter.delete("/review/delete/:id", deleteReview);
 homepageRouter.put("/review/reject/:id", rejectReview);
-
 
 export default homepageRouter;

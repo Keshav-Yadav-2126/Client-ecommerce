@@ -44,8 +44,7 @@ function PaymentSuccessPage() {
           {/* Info Text */}
           <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg p-4 mb-6 border border-yellow-200">
             <p className="text-sm text-gray-700">
-              Thank you for shopping with <span className="font-bold text-yellow-600">Pachory</span>! 
-              We'll send you an email confirmation shortly.
+              Thank you for shopping with <span className="font-bold text-yellow-600">Pachory</span>!
             </p>
           </div>
 

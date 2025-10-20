@@ -309,10 +309,10 @@ const ProductDetails = () => {
                 {productDetails.salePrice > 0 ? (
                   <>
                     <span className="text-2xl md:text-3xl font-bold text-yellow-600">
-                      ${productDetails.salePrice}
+                      ₹{productDetails.salePrice}
                     </span>
                     <span className="text-lg md:text-xl text-gray-500 line-through">
-                      ${productDetails.price}
+                      ₹{productDetails.price}
                     </span>
                     <Badge className="bg-red-100 text-red-800 text-xs md:text-sm">
                       Save ${(productDetails.price - productDetails.salePrice).toFixed(2)}
