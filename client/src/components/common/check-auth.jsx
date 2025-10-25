@@ -6,19 +6,17 @@ const CheckAuth = ({ isAuthenticated, user, children }) => {
 
   console.log("CheckAuth Props:", location.pathname, isAuthenticated, user);
   
+  // ✅ NEW: Always redirect "/" to "/shop/home" (no authentication required)
   if (location.pathname === "/") {
-    if (!isAuthenticated) {
-      return <Navigate to="/auth/login" />;
-    } else {
-      if (user?.role === "admin") {
-        return <Navigate to="/admin/dashboard" />;
-      } else {
-        return <Navigate to="/shop/home" />;
-      }
-    }
+    return <Navigate to="/shop/home" />;
   }
 
-  //   Unauthenticated users trying to access protected pages
+  // ✅ NEW: Allow unauthenticated access to all /shop/* routes
+  if (location.pathname.includes('/shop')) {
+    return <>{children}</>;
+  }
+
+  // Unauthenticated users trying to access protected admin pages
   if (
     !isAuthenticated &&
     !(location.pathname.includes('/login') || location.pathname.includes('/register'))
@@ -41,10 +39,10 @@ const CheckAuth = ({ isAuthenticated, user, children }) => {
     return <Navigate to="/unauth-page" />;
   }
 
-  // Admins trying to open /shop/*
-  if (isAuthenticated && user?.role === 'admin' && location.pathname.includes('/shop')) {
-    return <Navigate to="/admin/dashboard" />;
-  }
+  // Admins trying to open /shop/* (commented out - allow admins to shop)
+  // if (isAuthenticated && user?.role === 'admin' && location.pathname.includes('/shop')) {
+  //   return <Navigate to="/admin/dashboard" />;
+  // }
 
   return <>{children}</>;
 };

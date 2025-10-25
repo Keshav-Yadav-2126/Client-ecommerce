@@ -215,7 +215,7 @@ const OrderSummaryPage = () => {
                     <span>Subtotal ({items.length} items)</span>
                     <span className="font-medium">₹{subtotal.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between">
+                  {/* <div className="flex justify-between">
                     <div className="flex items-center gap-2">
                       <span>GST (18%)</span>
                       <Badge variant="outline" className="border-green-300 text-green-700 bg-green-50 text-xs">
@@ -223,12 +223,13 @@ const OrderSummaryPage = () => {
                       </Badge>
                     </div>
                     <span className="font-medium">₹{gstAmount.toFixed(2)}</span>
-                  </div>
+                  </div> */}
                   <Separator className="bg-yellow-200" />
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total Amount</span>
                     <span className="text-green-600">₹{totalAmount.toFixed(2)}</span>
                   </div>
+                  <div className="text-xs text-gray-500">Inclusive of all taxes</div>
                 </div>
               </CardContent>
             </Card>

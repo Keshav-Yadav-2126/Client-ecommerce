@@ -6,6 +6,8 @@ import { Button } from "../ui/button";
 import { categoryOptionsMap } from "@/config/index";
 import { ShoppingCart, Zap } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import useAuthStore from "@/store/auth-slice/auth-store"; // ✅ NEW: Import auth store
+import { toast } from "sonner"; // ✅ NEW: Import toast
 
 function ShoppingProjectTile({
   product,
@@ -13,6 +15,7 @@ function ShoppingProjectTile({
   handleGetProductDetails,
 }) {
   const navigate = useNavigate();
+  const { user } = useAuthStore(); // ✅ NEW: Get user from auth store
 
   const handleProductClick = () => {
     if (typeof handleGetProductDetails === "function") {
@@ -20,9 +23,17 @@ function ShoppingProjectTile({
     }
   };
 
-  // New buy now handler for multi-page checkout
+  // ✅ UPDATED: Buy now handler with authentication check
   const handleBuyNow = (e) => {
     e.stopPropagation();
+    
+    // ✅ NEW: Check if user is authenticated
+    if (!user) {
+      toast.error("Please login to buy this product");
+      navigate("/auth/login");
+      return;
+    }
+
     // Store product info in localStorage for direct purchase
     const buyNowProduct = {
       productId: product._id,
@@ -134,8 +145,6 @@ function ShoppingProjectTile({
               )}
             </CardContent>
           </div>
-
-
         </div>
       </div>
 

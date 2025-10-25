@@ -256,7 +256,7 @@ const AdminProducts = () => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                      <Label htmlFor="price" className="text-sm font-medium text-foreground">Price ($)</Label>
+                      <Label htmlFor="price" className="text-sm font-medium text-foreground">Price (₹)</Label>
                       <Input
                         className="mt-2 bg-white/50 border-green-200 focus:border-green-400"
                         id="price"
@@ -271,7 +271,7 @@ const AdminProducts = () => {
                     </div>
 
                     <div>
-                      <Label htmlFor="salePrice" className="text-sm font-medium text-foreground">Sale Price ($)</Label>
+                      <Label htmlFor="salePrice" className="text-sm font-medium text-foreground">Sale Price (₹)</Label>
                       <Input
                         className="mt-2 bg-white/50 border-green-200 focus:border-green-400"
                         id="salePrice"

@@ -13,7 +13,7 @@ import {
   Search,
 } from "lucide-react";
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import pachoryLogo from "@/assets/pachory-logo1.png";
+// import pachoryLogo from "@/assets/pachory-logo1.png";
 import {
   Link,
   useLocation,
@@ -186,89 +186,149 @@ const ShoppingHeader = () => {
           <span className="sr-only">Cart</span>
         </Button>
 
-        {/* User Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Avatar className="bg-gradient-to-r from-yellow-500 to-yellow-600 cursor-pointer hover:shadow-lg transition-shadow duration-200 ring-2 ring-yellow-200">
-              <AvatarFallback className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-extrabold">
-                {user?.name?.[0]?.toUpperCase() || "U"}
-              </AvatarFallback>
-            </Avatar>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            side="right"
-            className="w-56 bg-white border-yellow-200 shadow-lg"
-          >
-            <DropdownMenuLabel className="text-gray-800 font-semibold">
-              Logged in as {user?.name}
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator className="bg-yellow-200" />
-            <DropdownMenuItem
-              onClick={() => navigate("/shop/account")}
-              className="text-gray-700 hover:bg-yellow-50 cursor-pointer transition-colors duration-200"
-            >
-              <User className="mr-2 h-4 w-4 text-yellow-600" />
-              Account
-            </DropdownMenuItem>
-            <DropdownMenuSeparator className="bg-yellow-200" />
-            <DropdownMenuItem
-              onClick={handleLogout}
-              className="text-gray-700 hover:bg-yellow-50 cursor-pointer transition-colors duration-200"
-            >
-              <LogOut className="mr-2 h-4 w-4 text-red-600" />
-              Logout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    );
-  }
-
-  function SidebarUserDropdown() {
-    return (
-      <div className="mt-6 pt-6 border-t border-yellow-200">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg cursor-pointer hover:bg-yellow-100 transition-colors duration-200">
-              <Avatar className="bg-gradient-to-r from-yellow-500 to-yellow-600 w-10 h-10">
+        {/* User Dropdown - Conditional based on authentication */}
+        {user ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Avatar className="bg-gradient-to-r from-yellow-500 to-yellow-600 cursor-pointer hover:shadow-lg transition-shadow duration-200 ring-2 ring-yellow-200">
                 <AvatarFallback className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-extrabold">
                   {user?.name?.[0]?.toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-800">{user?.name}</p>
-                <p className="text-xs text-gray-600">View Account</p>
-              </div>
-            </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            side="bottom"
-            className="w-56 bg-white border-yellow-200 shadow-lg"
-          >
-            <DropdownMenuLabel className="text-gray-800 font-semibold">
-              Account Options
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator className="bg-yellow-200" />
-            <DropdownMenuItem
-              onClick={() => navigate("/shop/account")}
-              className="text-gray-700 hover:bg-yellow-50 cursor-pointer transition-colors duration-200"
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              side="right"
+              className="w-56 bg-white border-yellow-200 shadow-lg"
             >
-              <User className="mr-2 h-4 w-4 text-yellow-600" />
-              Account
-            </DropdownMenuItem>
-            <DropdownMenuSeparator className="bg-yellow-200" />
-            <DropdownMenuItem
-              onClick={handleLogout}
-              className="text-gray-700 hover:bg-yellow-50 cursor-pointer transition-colors duration-200"
+              <DropdownMenuLabel className="text-gray-800 font-semibold">
+                Logged in as {user?.name}
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-yellow-200" />
+              <DropdownMenuItem
+                onClick={() => navigate("/shop/account")}
+                className="text-gray-700 hover:bg-yellow-50 cursor-pointer transition-colors duration-200"
+              >
+                <User className="mr-2 h-4 w-4 text-yellow-600" />
+                Account
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-yellow-200" />
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="text-gray-700 hover:bg-yellow-50 cursor-pointer transition-colors duration-200"
+              >
+                <LogOut className="mr-2 h-4 w-4 text-red-600" />
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Avatar className="bg-gradient-to-r from-gray-400 to-gray-500 cursor-pointer hover:shadow-lg transition-shadow duration-200 ring-2 ring-gray-200">
+                <AvatarFallback className="bg-gradient-to-r from-gray-400 to-gray-500 text-white font-extrabold">
+                  <User className="w-4 h-4" />
+                </AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              side="right"
+              className="w-56 bg-white border-gray-200 shadow-lg"
             >
-              <LogOut className="mr-2 h-4 w-4 text-red-600" />
-              Logout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <DropdownMenuLabel className="text-gray-800 font-semibold">
+                Account
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-gray-200" />
+              <DropdownMenuItem
+                onClick={() => navigate("/auth/login")}
+                className="text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors duration-200"
+              >
+                <User className="mr-2 h-4 w-4 text-gray-600" />
+                Login
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
     );
   }
+
+  // Header.jsx - Update the SidebarUserDropdown function
+
+function SidebarUserDropdown() {
+  // ✅ NEW: Check if user is authenticated
+  if (!user) {
+    // Show login option for unauthenticated users in sidebar
+    return (
+      <div className="mt-6 pt-6 border-t border-gray-200">
+        <div 
+          onClick={() => {
+            setMobileMenuOpen(false);
+            navigate("/auth/login");
+          }}
+          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+        >
+          <Avatar className="bg-gradient-to-r from-gray-400 to-gray-500 w-10 h-10">
+            <AvatarFallback className="bg-gradient-to-r from-gray-400 to-gray-500 text-white font-extrabold">
+              <User className="w-5 h-5" />
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex-1">
+            <p className="text-sm font-medium text-gray-800">Guest User</p>
+            <p className="text-xs text-gray-600">Login to your account</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Original authenticated user dropdown
+  return (
+    <div className="mt-6 pt-6 border-t border-yellow-200">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg cursor-pointer hover:bg-yellow-100 transition-colors duration-200">
+            <Avatar className="bg-gradient-to-r from-yellow-500 to-yellow-600 w-10 h-10">
+              <AvatarFallback className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-extrabold">
+                {user?.name?.[0]?.toUpperCase() || "U"}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-800">{user?.name}</p>
+              <p className="text-xs text-gray-600">View Account</p>
+            </div>
+          </div>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          side="bottom"
+          className="w-56 bg-white border-yellow-200 shadow-lg"
+        >
+          <DropdownMenuLabel className="text-gray-800 font-semibold">
+            Account Options
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator className="bg-yellow-200" />
+          <DropdownMenuItem
+            onClick={() => {
+              setMobileMenuOpen(false);
+              navigate("/shop/account");
+            }}
+            className="text-gray-700 hover:bg-yellow-50 cursor-pointer transition-colors duration-200"
+          >
+            <User className="mr-2 h-4 w-4 text-yellow-600" />
+            Account
+          </DropdownMenuItem>
+          <DropdownMenuSeparator className="bg-yellow-200" />
+          <DropdownMenuItem
+            onClick={handleLogout}
+            className="text-gray-700 hover:bg-yellow-50 cursor-pointer transition-colors duration-200"
+          >
+            <LogOut className="mr-2 h-4 w-4 text-red-600" />
+            Logout
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+}
 
   return (
     <>

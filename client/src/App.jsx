@@ -1,5 +1,5 @@
 import "./App.css";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Authlayout from "./components/auth/Layout";
 import RefundRequestRoute from "./pages/shopping-view/RefundRequestRoute.jsx";
 import Login from "./pages/auth/Login.jsx";
@@ -49,15 +49,7 @@ function App() {
     <NotificationProvider>
       <div className="flex flex-col overflow-hidden bg-gradient-to-br from-blue-50 via-yellow-50 to-orange-50">
         <Routes>
-          <Route
-            path="/"
-            element={
-              <CheckAuth
-                isAuthenticated={auth.isAuthenticated}
-                user={auth.user}
-              ></CheckAuth>
-            }
-          />
+          <Route path="/" element={<Navigate to="/shop/home" />} />
           <Route
             path="/auth"
             element={
@@ -87,7 +79,7 @@ function App() {
             <Route path="products" element={<AdminProducts />} />
             <Route path="orders" element={<AdminOrders />} />
             <Route path="refunds" element={<AdminRefunds />} />
-            <Route path="features" element={<AdminFeatures/>}/>
+            <Route path="features" element={<AdminFeatures />} />
           </Route>
           <Route
             path="/shop"

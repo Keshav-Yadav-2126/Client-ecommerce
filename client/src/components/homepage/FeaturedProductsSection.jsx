@@ -65,6 +65,11 @@ const FeaturedProductsSection = ({ products = [] }) => {
   }
 
   async function handleBuyNow(getProductId, getTotalStock) {
+    if (!user) {
+          toast.error("Please login to buy this product");
+          navigate("/auth/login");
+          return;
+    }
     await handleAddToCart(getProductId, getTotalStock);
     navigate("/shop/address");
   }
