@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import CartItemContent from "@/components/shopping-view/cart-tem-content";
-import { CreditCard, Loader2, AlertCircle, CheckCircle, Package, MapPin } from "lucide-react";
+import { CreditCard, Loader2, AlertCircle, CheckCircle, Package, MapPin, Truck } from "lucide-react";
 import { toast } from "sonner";
 
 const PaymentPage = () => {
@@ -16,6 +16,10 @@ const PaymentPage = () => {
   const { createNewOrder, verifyPayment, razorpayConfig, clearRazorpayConfig } = useOrderStore();
   const [isPaymentStart, setIsPaymentStart] = useState(false);
   const [orderSummary, setOrderSummary] = useState(null);
+
+  // ✅ NEW: Delivery charge constants
+  const DELIVERY_CHARGE = 100;
+  const FREE_DELIVERY_THRESHOLD = 1500;
 
   useEffect(() => {
     // Retrieve order summary from localStorage
@@ -27,6 +31,19 @@ const PaymentPage = () => {
       navigate("/shop/order-summary");
     }
   }, [navigate]);
+
+  // ✅ NEW: Calculate delivery charges
+  const calculateDeliveryCharge = () => {
+    if (!orderSummary) return 0;
+    return orderSummary.subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_CHARGE;
+  };
+
+  // ✅ NEW: Calculate final total with delivery
+  const calculateFinalTotal = () => {
+    if (!orderSummary) return 0;
+    const deliveryCharge = calculateDeliveryCharge();
+    return orderSummary.totalAmount + deliveryCharge;
+  };
 
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
@@ -112,9 +129,13 @@ const PaymentPage = () => {
     const buyNowProduct = localStorage.getItem("buyNowProduct");
     const isBuyNow = !!buyNowProduct;
 
+    // ✅ NEW: Include delivery charges in total amount
+    const deliveryCharge = calculateDeliveryCharge();
+    const finalTotal = calculateFinalTotal();
+
     const orderData = {
       userId: userId,
-      cartId: isBuyNow ? "" : orderSummary.items[0]?.cartId || "", // No cartId for buy now
+      cartId: isBuyNow ? "" : orderSummary.items[0]?.cartId || "",
       cartItems: orderSummary.items.map((singleItem) => ({
         productId: singleItem?.productId || singleItem?.product,
         title: singleItem?.title,
@@ -134,7 +155,7 @@ const PaymentPage = () => {
       orderStatus: "pending",
       paymentMethod: "razorpay",
       paymentStatus: "pending",
-      totalAmount: orderSummary.totalAmount,
+      totalAmount: finalTotal, // ✅ UPDATED: Use final total with delivery charges
       orderDate: new Date(),
       orderUpdateDate: new Date(),
     };
@@ -178,6 +199,11 @@ const PaymentPage = () => {
       </div>
     );
   }
+
+  // ✅ NEW: Get calculated values
+  const deliveryCharge = calculateDeliveryCharge();
+  const finalTotal = calculateFinalTotal();
+  const isFreeDelivery = deliveryCharge === 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-yellow-50 to-cream-50 py-8">
@@ -233,9 +259,6 @@ const PaymentPage = () => {
                 <div className="text-sm text-gray-700">
                   <p className="font-medium">{orderSummary.selectedAddress.address}</p>
                   <p>{orderSummary.selectedAddress.city}, {orderSummary.selectedAddress.state} - {orderSummary.selectedAddress.pincode}</p>
-                  {/* Commented out old mobile display that was showing blank */}
-                  {/* <p>Mobile: {orderSummary.selectedAddress.mobileNo}</p> */}
-                  {/* New mobile display with fallback */}
                   <p>Mobile: {orderSummary.selectedAddress.mobileNo || orderSummary.selectedAddress.phone || 'Not provided'}</p>
                   {orderSummary.selectedAddress.notes && <p className="mt-2 text-gray-600">Note: {orderSummary.selectedAddress.notes}</p>}
                 </div>
@@ -254,10 +277,55 @@ const PaymentPage = () => {
               </CardHeader>
               <CardContent className="p-4">
                 <div className="space-y-3 text-sm">
+                  {/* Subtotal */}
                   <div className="flex justify-between">
                     <span>Subtotal ({orderSummary.items.length} items)</span>
                     <span className="font-medium">₹{orderSummary.subtotal.toFixed(2)}</span>
                   </div>
+
+                  {/* ✅ NEW: Delivery Charges */}
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <Truck className="w-4 h-4 text-blue-600" />
+                      <span>Delivery Charges</span>
+                    </div>
+                    {isFreeDelivery ? (
+                      <div className="flex items-center gap-2">
+                        <span className="line-through text-gray-400">₹{DELIVERY_CHARGE}</span>
+                        <Badge className="bg-green-100 text-green-700 border-green-300 text-xs font-semibold">
+                          FREE
+                        </Badge>
+                      </div>
+                    ) : (
+                      <span className="font-medium">₹{deliveryCharge.toFixed(2)}</span>
+                    )}
+                  </div>
+
+                  {/* ✅ NEW: Free delivery notice */}
+                  {!isFreeDelivery && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-xs text-blue-800">
+                      <div className="flex items-center gap-2">
+                        <Truck className="w-4 h-4" />
+                        <span>
+                          Add ₹{(FREE_DELIVERY_THRESHOLD - orderSummary.subtotal).toFixed(2)} more for FREE delivery
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ✅ NEW: Free delivery achieved notice */}
+                  {isFreeDelivery && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-2 text-xs text-green-800">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4" />
+                        <span className="font-semibold">
+                          🎉 You saved ₹{DELIVERY_CHARGE} on delivery!
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* GST - Commented out */}
                   {/* <div className="flex justify-between">
                     <div className="flex items-center gap-2">
                       <span>GST (18%)</span>
@@ -267,10 +335,13 @@ const PaymentPage = () => {
                     </div>
                     <span className="font-medium">₹{orderSummary.gstAmount.toFixed(2)}</span>
                   </div> */}
+
                   <Separator className="bg-yellow-200" />
+
+                  {/* ✅ UPDATED: Total Amount with delivery */}
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total Amount</span>
-                    <span className="text-green-600">₹{orderSummary.totalAmount.toFixed(2)}</span>
+                    <span className="text-green-600">₹{finalTotal.toFixed(2)}</span>
                   </div>
                   <div className="text-xs text-gray-500">Inclusive of all taxes</div>
                 </div>
@@ -293,7 +364,7 @@ const PaymentPage = () => {
                   ) : (
                     <>
                       <CreditCard className="w-5 h-5 mr-2" />
-                      Pay ₹{orderSummary.totalAmount.toFixed(2)}
+                      Pay ₹{finalTotal.toFixed(2)}
                     </>
                   )}
                 </Button>

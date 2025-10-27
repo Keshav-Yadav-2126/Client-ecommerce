@@ -5,6 +5,7 @@ import FeaturedProductsSection from "@/components/homepage/FeaturedProductsSecti
 import AboutUsSection from "@/components/homepage/AboutUsSection";
 import CustomerReviewsSection from "@/components/homepage/CustomerReviewsSection";
 import VideosSection from "@/components/homepage/VideosSection";
+import { Truck, X } from "lucide-react";
 import axios from "axios";
 
 const ShoppingHome = () => {
@@ -13,6 +14,7 @@ const ShoppingHome = () => {
   const [aboutUsContent, setAboutUsContent] = useState("");
   const [customerReviews, setCustomerReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showShippingBanner, setShowShippingBanner] = useState(true); // ✅ NEW: Banner visibility state
 
   useEffect(() => {
     async function fetchHomepageData() {
@@ -78,6 +80,46 @@ const ShoppingHome = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 via-yellow-50 to-orange-50">
+      {/* ✅ NEW: Free Shipping Banner */}
+      {showShippingBanner && (
+        <div className="relative bg-gradient-to-r from-green-600 via-green-500 to-emerald-600 text-white py-3 px-4 shadow-lg overflow-hidden">
+          {/* Animated background pattern */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute inset-0 bg-repeat" style={{
+              backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
+              backgroundSize: '20px 20px'
+            }}></div>
+          </div>
+
+          <div className="relative flex items-center justify-center gap-2 sm:gap-3 text-center">
+            {/* Truck Icon with animation */}
+            <Truck className="w-5 h-5 sm:w-6 sm:h-6 animate-bounce" />
+            
+            {/* Main Text */}
+            <p className="text-xs sm:text-sm md:text-base font-bold tracking-wide">
+              🎉 FREE SHIPPING on orders above ₹1,500 
+              <span className="hidden sm:inline ml-2">| Shop Now & Save!</span>
+            </p>
+
+            {/* Close Button */}
+            <button
+              onClick={() => setShowShippingBanner(false)}
+              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 hover:bg-white/20 rounded-full p-1 transition-all duration-200"
+              aria-label="Close banner"
+            >
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+          </div>
+
+          {/* Optional: Animated sliding text for mobile */}
+          <div className="sm:hidden mt-1 text-center">
+            <p className="text-[10px] opacity-90 animate-pulse">
+              Limited time offer!
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Hero Carousel - Only render if we have banners */}
       {carouselImages.length > 0 && <HeroCarousel images={carouselImages} />}
 
@@ -104,9 +146,7 @@ const ShoppingHome = () => {
       <VideosSection />
 
       {/* Customer Reviews Section - Only render if we have reviews */}
-      
       <CustomerReviewsSection reviews={customerReviews} />
-      
     </div>
   );
 };
