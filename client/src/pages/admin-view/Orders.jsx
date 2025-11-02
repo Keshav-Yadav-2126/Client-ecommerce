@@ -43,12 +43,24 @@ const AdminOrders = () => {
     resetOrderDetails,
     getOrderDetailsForAdmin,
     getAllOrdersForAdmin,
+    updateOrderStatus,
     isLoading,
   } = useAdminOrderStore();
 
   async function handleFetchOrderDetails(getId) {
     await getOrderDetailsForAdmin(getId);
   }
+
+  const handleUpdateStatus = async (orderId, newStatus) => {
+    const result = await updateOrderStatus({ id: orderId, orderStatus: newStatus });
+    if (result?.success) {
+      // Refresh order details
+      await getOrderDetailsForAdmin(orderId);
+      // Refresh order list
+      await getAllOrdersForAdmin();
+    }
+    return result;
+  };
 
   useEffect(() => {
     getAllOrdersForAdmin();
@@ -69,6 +81,8 @@ const AdminOrders = () => {
     switch (status?.toLowerCase()) {
       case "delivered":
         return "bg-green-500 hover:bg-green-600 text-white";
+      case "confirmed":
+        return "bg-blue-500 hover:bg-blue-600 text-white";
       case "pending":
         return "bg-yellow-500 hover:bg-yellow-600 text-white";
       case "inprocess":
@@ -100,7 +114,7 @@ const AdminOrders = () => {
     delivered: orderList?.filter(o => o.orderStatus === 'delivered').length || 0,
   };
 
-  if (isLoading) {
+  if (isLoading && !orderList?.length) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
@@ -122,8 +136,9 @@ const AdminOrders = () => {
           <Button 
             onClick={() => getAllOrdersForAdmin()}
             className="bg-green-600 hover:bg-green-700"
+            disabled={isLoading}
           >
-            <RefreshCw className="w-4 h-4 mr-2" />
+            <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
         </div>
@@ -209,6 +224,7 @@ const AdminOrders = () => {
             <SelectContent>
               <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="confirmed">Confirmed</SelectItem>
               <SelectItem value="inProcess">In Process</SelectItem>
               <SelectItem value="inShipping">In Shipping</SelectItem>
               <SelectItem value="delivered">Delivered</SelectItem>
@@ -345,7 +361,11 @@ const AdminOrders = () => {
           resetOrderDetails();
         }}
       >
-        <AdminOrderDetailsView orderDetails={orderDetails} />
+        <AdminOrderDetailsView 
+          orderDetails={orderDetails} 
+          onUpdateStatus={handleUpdateStatus}
+          onRefresh={() => getAllOrdersForAdmin()}
+        />
       </Dialog>
     </div>
   );

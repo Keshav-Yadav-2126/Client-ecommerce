@@ -147,7 +147,8 @@ const ShoppingCheckout = () => {
         city: currentSelectedAddress?.city,
         state: currentSelectedAddress?.state,
         pincode: currentSelectedAddress?.pincode,
-        mobileNo: currentSelectedAddress?.mobileNo,
+        mobileNo: currentSelectedAddress?.mobileNo || currentSelectedAddress?.phone,
+        phone: currentSelectedAddress?.phone || currentSelectedAddress?.mobileNo,
         notes: currentSelectedAddress?.notes,
       },
       orderStatus: "pending",
@@ -156,7 +157,11 @@ const ShoppingCheckout = () => {
       totalAmount: totalAmount,
       orderDate: new Date(),
       orderUpdateDate: new Date(),
+      customerName: user?.userName || user?.name,  // ✅ ADDED
+      customerEmail: user?.email,
     };
+
+    console.log("Order data being sent:", orderData);
 
     try {
       setIsPaymentStart(true);

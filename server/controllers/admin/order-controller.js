@@ -1,4 +1,6 @@
 import Order from "../../models/Order.js";
+import User from "../../models/User-schema.js";
+// import User from "../../models/User.js"; // ✅ Import User model
 
 export const getAllOrdersForAdmin = async (req, res) => {
   try {
@@ -11,9 +13,27 @@ export const getAllOrdersForAdmin = async (req, res) => {
       });
     }
 
+    // ✅ Add customer names to orders
+    const ordersWithNames = await Promise.all(
+      orders.map(async (order) => {
+        const orderObj = order.toObject();
+        
+        // If no customerName, fetch from User
+        if (!orderObj.customerName && orderObj.userId) {
+          const user = await User.findById(orderObj.userId).select('name email');
+          if (user) {
+            orderObj.customerName = user.name || 'Customer';
+            orderObj.customerEmail = user.email || '';
+          }
+        }
+        
+        return orderObj;
+      })
+    );
+
     res.status(200).json({
       success: true,
-      data: orders,
+      data: ordersWithNames,
     });
   } catch (e) {
     console.log("Get all orders error:", e);
@@ -37,9 +57,20 @@ export const getOrderDetailsForAdmin = async (req, res) => {
       });
     }
 
+    const orderObj = order.toObject();
+
+    // ✅ If no customerName, fetch from User
+    if (!orderObj.customerName && orderObj.userId) {
+      const user = await User.findById(orderObj.userId).select('name email');
+      if (user) {
+        orderObj.customerName = user.name || 'Customer';
+        orderObj.customerEmail = user.email || '';
+      }
+    }
+
     res.status(200).json({
       success: true,
-      data: order,
+      data: orderObj,
     });
   } catch (e) {
     console.log("Get order details error:", e);

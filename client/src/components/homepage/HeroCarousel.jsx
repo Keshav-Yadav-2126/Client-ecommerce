@@ -44,7 +44,7 @@ const HeroCarousel = ({ images = [] }) => {
   }
 
   return (
-    <div className="relative w-full h-[300px] md:h-[400px] lg:h-[500px] rounded-2xl overflow-hidden group shadow-2xl">
+    <div className="relative w-full h-[300px] md:h-[400px] lg:h-[500px] rounded-2xl overflow-hidden group"> {/* shadow-2xl */}
       {/* Slides */}
       <div className="relative w-full h-full">
         {images.map((banner, index) => (
@@ -57,7 +57,7 @@ const HeroCarousel = ({ images = [] }) => {
             <img
               src={banner.image}
               alt={banner.title || `Slide ${index + 1}`}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-center object-cover"
             />
             {/* Overlay Content */}
             {/* <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex items-center">

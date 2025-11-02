@@ -1,23 +1,17 @@
-import useAuthStore from "@/store/auth-slice/auth-store";
-import { Label } from "../ui/label";
-import { DialogContent } from "../ui/dialog";
-import { FormInput } from "../common/form";
-import { Separator } from "../ui/separator";
-import { Badge } from "../ui/badge";
-import { useState } from "react";
+import React, { useState } from "react";
+import { Label } from "@/components/ui/label";
+import { DialogContent } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Package, Calendar, CreditCard, MapPin, ShoppingBag, User, Phone, Home } from "lucide-react";
 import { toast } from "sonner";
-import useAdminOrderStore from "@/store/admin/order-store";
-import { Card } from "../ui/card";
-import { Package, Calendar, CreditCard, MapPin, ShoppingBag, User } from "lucide-react";
 
-const initialFormData = {
-  status: "",
-};
-
-const AdminOrderDetailsView = ({ orderDetails }) => {
-  const [formData, setFormData] = useState(initialFormData);
-  const { user } = useAuthStore();
-  const { updateOrderStatus, getOrderDetailsForAdmin, getAllOrdersForAdmin } = useAdminOrderStore();
+const AdminOrderDetailsView = ({ orderDetails, onUpdateStatus, onRefresh }) => {
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
 
   if (!orderDetails) {
     return (
@@ -29,33 +23,37 @@ const AdminOrderDetailsView = ({ orderDetails }) => {
     );
   }
 
-  function handleUpdateStatus(event) {
-    event.preventDefault();
-    const { status } = formData;
-
-    if (!status) {
-      toast.error("Please select a status");
-      return;
-    }
-
-    updateOrderStatus({ id: orderDetails?._id, orderStatus: status }).then((data) => {
-      if (data?.success) {
-        getOrderDetailsForAdmin(orderDetails?._id);
-        getAllOrdersForAdmin();
-        setFormData(initialFormData);
-        toast.success(data?.message || "Order status updated successfully", {
-          duration: 2000,
-        });
-      } else {
-        toast.error(data?.message || "Failed to update status");
-      }
-    });
+  const handleUpdateStatus = async (e) => {
+  e.preventDefault();
+  
+  if (!selectedStatus) {
+    toast.error("Please select a status");
+    return;
   }
+
+  setIsUpdating(true);
+  try {
+    const result = await onUpdateStatus(orderDetails._id, selectedStatus);
+    if (result?.success) {
+      toast.success("Order status updated successfully");
+      if (onRefresh) onRefresh();
+      setSelectedStatus("");
+    } else {
+      toast.error(result?.message || "Failed to update status");
+    }
+  } catch (error) {
+    toast.error("Error updating status");
+  } finally {
+    setIsUpdating(false);
+  }
+};
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case "delivered":
         return "bg-green-500";
+      case "confirmed":
+        return "bg-blue-500";
       case "pending":
         return "bg-yellow-500";
       case "inprocess":
@@ -139,7 +137,7 @@ const AdminOrderDetailsView = ({ orderDetails }) => {
               <div className="text-left sm:text-right">
                 <p className="text-xs text-muted-foreground">Total Amount</p>
                 <p className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
-                  ₹{orderDetails.totalAmount.toFixed(2)}
+                  ₹{orderDetails.totalAmount?.toFixed(2)}
                 </p>
               </div>
             </div>
@@ -189,39 +187,79 @@ const AdminOrderDetailsView = ({ orderDetails }) => {
 
         <Separator className="bg-green-200" />
 
-        {/* Shipping Info */}
+        {/* Customer & Shipping Info */}
         <div>
           <h3 className="font-bold text-base sm:text-lg text-gray-800 mb-2 sm:mb-3 flex items-center gap-2">
             <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0" />
-            Shipping Information
+            Customer & Shipping Information
           </h3>
           <Card className="border-green-200 shadow-sm bg-gradient-to-br from-green-50/50 to-white">
-            <div className="p-3 sm:p-4 space-y-2">
-              <div className="flex items-center gap-2">
+            <div className="p-3 sm:p-4 space-y-3">
+              {/* Customer Name */}
+              <div className="flex items-center gap-2 pb-2 border-b border-green-100">
                 <User className="w-4 h-4 text-green-600 flex-shrink-0" />
-                <p className="font-semibold text-xs sm:text-sm text-gray-800 break-words">{user?.userName || user?.name || 'Customer'}</p>
+                <div>
+                  <p className="text-xs text-muted-foreground">Customer Name</p>
+                  <p className="font-semibold text-sm text-gray-800">
+                    {orderDetails.customerName || 'Customer'}
+                  </p>
+                </div>
               </div>
-              <p className="text-xs sm:text-sm text-gray-700 break-words">{orderDetails.addressInfo?.address}</p>
-              <p className="text-xs sm:text-sm text-gray-700">
-                {orderDetails.addressInfo?.city}, {orderDetails.addressInfo?.state || 'N/A'}
-              </p>
-              <p className="text-xs sm:text-sm text-gray-700">
-                Pincode: {orderDetails.addressInfo?.pincode}
-              </p>
-              <p className="text-xs sm:text-sm text-gray-700 flex items-center gap-2">
-                <span className="font-medium flex-shrink-0">Phone:</span>
-                {/* Previous implementation (kept for reference): */}
-                {/* <span className="break-all">{orderDetails?.data?.addressInfo?.mobileNo || orderDetails?.data?.addressInfo?.phone}</span> */}
-                {/* Use top-level addressInfo consistently — some payloads put addressInfo at root (orderDetails.addressInfo) */}
-                <span className="break-all">
-                  {orderDetails?.addressInfo?.mobileNo || orderDetails?.addressInfo?.phone || orderDetails?.data?.addressInfo?.mobileNo || orderDetails?.data?.addressInfo?.phone || 'N/A'}
-                </span>
-              </p>
-              {/* <span className="break-all">{orderDetails?.data?.addressInfo?.mobileNo || orderDetails?.data?.addressInfo?.phone}</span> */}
+
+              {/* Address */}
+              <div className="flex items-start gap-2">
+                <Home className="w-4 h-4 text-green-600 flex-shrink-0 mt-1" />
+                <div className="flex-1">
+                  <p className="text-xs text-muted-foreground mb-1">Delivery Address</p>
+                  <p className="text-xs sm:text-sm text-gray-700 break-words">
+                    {orderDetails.addressInfo?.address || 'No address provided'}
+                  </p>
+                </div>
+              </div>
+
+              {/* City, State, Pincode */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-xs text-muted-foreground">City</p>
+                  <p className="text-xs sm:text-sm text-gray-700 font-medium">
+                    {orderDetails.addressInfo?.city || 'N/A'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">State</p>
+                  <p className="text-xs sm:text-sm text-gray-700 font-medium">
+                    {orderDetails.addressInfo?.state || 'N/A'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Pincode</p>
+                  <p className="text-xs sm:text-sm text-gray-700 font-medium">
+                    {orderDetails.addressInfo?.pincode || 'N/A'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Phone */}
+              <div className="flex items-center gap-2 pt-2 border-t border-green-100">
+                <Phone className="w-4 h-4 text-green-600 flex-shrink-0" />
+                <div>
+                  <p className="text-xs text-muted-foreground">Phone Number</p>
+                  <p className="text-xs sm:text-sm text-gray-700 font-medium break-all">
+                    {orderDetails.addressInfo?.mobileNo || 
+                     orderDetails.addressInfo?.phone || 
+                     'N/A'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Notes */}
               {orderDetails.addressInfo?.notes && (
-                <p className="text-xs sm:text-sm text-gray-600 italic border-t border-green-200 pt-2 mt-2">
-                  Note: {orderDetails.addressInfo.notes}
-                </p>
+                <div className="pt-2 border-t border-green-100">
+                  <p className="text-xs text-muted-foreground mb-1">Delivery Notes</p>
+                  <p className="text-xs sm:text-sm text-gray-600 italic bg-yellow-50 p-2 rounded border border-yellow-200">
+                    {orderDetails.addressInfo.notes}
+                  </p>
+                </div>
               )}
             </div>
           </Card>
@@ -234,26 +272,41 @@ const AdminOrderDetailsView = ({ orderDetails }) => {
           <h3 className="font-bold text-base sm:text-lg text-gray-800 mb-2 sm:mb-3">Update Order Status</h3>
           <Card className="border-green-200 bg-gradient-to-br from-green-50/30 to-white">
             <div className="p-3 sm:p-4">
-              <FormInput
-                formControls={[
-                  {
-                    label: "Order Status",
-                    name: "status",
-                    componentType: "select",
-                    options: [
-                      { id: "pending", label: "Pending" },
-                      { id: "inProcess", label: "In Process" },
-                      { id: "inShipping", label: "In Shipping" },
-                      { id: "delivered", label: "Delivered" },
-                      { id: "rejected", label: "Rejected" },
-                    ],
-                  },
-                ]}
-                formData={formData}
-                setFormData={setFormData}
-                buttonText="Update Order Status"
-                onSubmit={handleUpdateStatus}
-              />
+              <form onSubmit={handleUpdateStatus} className="space-y-4">
+                <div>
+                  <Label htmlFor="status" className="text-sm font-medium text-gray-700 mb-2 block">
+                    Order Status
+                  </Label>
+                  <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="confirmed">Confirmed</SelectItem>
+                      <SelectItem value="inProcess">In Process</SelectItem>
+                      <SelectItem value="inShipping">In Shipping</SelectItem>
+                      <SelectItem value="delivered">Delivered</SelectItem>
+                      <SelectItem value="rejected">Rejected</SelectItem>
+                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button 
+                  type="submit" 
+                  className="w-full bg-green-600 hover:bg-green-700"
+                  disabled={isUpdating || !selectedStatus}
+                >
+                  {isUpdating ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                      Updating...
+                    </>
+                  ) : (
+                    "Update Order Status"
+                  )}
+                </Button>
+              </form>
             </div>
           </Card>
         </div>

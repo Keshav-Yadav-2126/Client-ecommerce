@@ -4,15 +4,29 @@ import mongoose from "mongoose";
 const BannerSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true,
+    default: "",
+    trim: true,
   },
-  description: String,
+  description: {
+    type: String,
+    default: "",
+    trim: true,
+  },
   image: {
     type: String,
-    required: true,
+    required: [true, "Image is required"],
+    trim: true,
   },
-  link: String,
-  buttonText: String,
+  link: {
+    type: String,
+    default: "",
+    trim: true,
+  },
+  buttonText: {
+    type: String,
+    default: "",
+    trim: true,
+  },
   order: {
     type: Number,
     default: 0,
@@ -21,7 +35,9 @@ const BannerSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
-}, { timestamps: true });
+}, { 
+  timestamps: true 
+});
 
 // Discount Banner Schema
 const DiscountBannerSchema = new mongoose.Schema({

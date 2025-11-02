@@ -43,18 +43,22 @@ const useAdminOrderStore = create((set) => ({
   },
 
   updateOrderStatus: async ({ id, orderStatus }) => {
-    try {
-      const response = await axios.put(
-        `${import.meta.env.VITE_API_URL}/api/admin/orders/update/${id}`,
-        { orderStatus }
-      );
-      
-      return response.data;
-    } catch (error) {
-      console.error("Update order status error:", error);
-      return { success: false, message: "Failed to update order status" };
-    }
-  },
+  try {
+    const response = await axios.put(
+      `${import.meta.env.VITE_API_URL}/api/admin/orders/update/${id}`,
+      { orderStatus },
+      { withCredentials: true }  // ✅ ADD THIS if you need auth
+    );
+    
+    return response.data;
+  } catch (error) {
+    console.error("Update order status error:", error);
+    return { 
+      success: false, 
+      message: error.response?.data?.message || "Failed to update order status" 
+    };
+  }
+},
 
   resetOrderDetails: () => set({ orderDetails: null }),
 }));

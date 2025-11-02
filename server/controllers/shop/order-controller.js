@@ -23,7 +23,11 @@ const createOrder = async (req, res) => {
       orderDate,
       orderUpdateDate,
       cartId,
+      customerName,    // ✅ ADDED
+      customerEmail,   // ✅ ADDED (optional)
     } = req.body;
+
+    console.log("Creating order with customer name:", customerName); // ✅ DEBUG LOG  
 
     // Validate stock before creating order
     for (let item of cartItems) {
@@ -44,9 +48,9 @@ const createOrder = async (req, res) => {
       }
     }
 
-    // // Create Razorpay order
+    // Create Razorpay order
     const razorpayOrder = await razorpay.orders.create({
-      amount: Math.round(totalAmount * 100), // Amount in paise
+      amount: Math.round(totalAmount * 100),
       currency: "INR",
       receipt: `receipt_${Date.now()}`,
       notes: {
@@ -60,7 +64,11 @@ const createOrder = async (req, res) => {
       userId,
       cartId,
       cartItems,
-      addressInfo,
+      addressInfo: {
+        ...addressInfo,
+        mobileNo: addressInfo.mobileNo || addressInfo.phone,  // ✅ Ensure mobileNo is saved
+        phone: addressInfo.phone || addressInfo.mobileNo,     // ✅ Keep phone for backward compatibility
+      },
       orderStatus,
       paymentMethod,
       paymentStatus,
@@ -69,6 +77,8 @@ const createOrder = async (req, res) => {
       orderUpdateDate,
       paymentId: razorpayOrder.id,
       payerId: "",
+      customerName: customerName,      // ✅ ADDED
+      customerEmail: customerEmail,    // ✅ ADDED
     });
 
     await newlyCreatedOrder.save();

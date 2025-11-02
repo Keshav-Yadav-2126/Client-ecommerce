@@ -195,7 +195,7 @@ const Footer = () => {
               </p>
               <div className="flex gap-3 justify-center">
                 <a
-                  href="https://wa.me/918800000000"
+                  href="https://wa.me/918003245515"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center hover:bg-green-200 transition-all hover:scale-110 shadow-sm"
@@ -203,7 +203,7 @@ const Footer = () => {
                   <MessageCircle className="w-5 h-5 text-green-600" />
                 </a>
                 <a
-                  href="https://instagram.com/pachory"
+                  href="https://www.instagram.com/pachoryfarm?igsh=eWI3dGJ1YmZlYTJ3"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center hover:bg-pink-200 transition-all hover:scale-110 shadow-sm"
@@ -211,7 +211,7 @@ const Footer = () => {
                   <Instagram className="w-5 h-5 text-pink-600" />
                 </a>
                 <a
-                  href="https://facebook.com/pachory"
+                  href="https://www.facebook.com/share/1BaccYxKVi/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center hover:bg-blue-200 transition-all hover:scale-110 shadow-sm"
@@ -325,17 +325,17 @@ const Footer = () => {
                 className="flex items-center gap-2 text-gray-600 hover:text-yellow-600 transition-colors"
               >
                 <Mail className="w-4 h-4" />
-                <span>support@pachory.com</span>
+                <span>{import.meta.env.VITE_API_EMAIL}</span>
               </a>
               <a
-                href="tel:+918800000000"
+                href="tel:+918003245515"
                 className="flex items-center gap-2 text-gray-600 hover:text-yellow-600 transition-colors"
               >
                 <Phone className="w-4 h-4" />
-                <span>+91 8800000000</span>
+                <span>+91{import.meta.env.VITE_API_WHATSAPP_NUMBER}</span>
               </a>
               <a
-                href="https://wa.me/918800000000"
+                href="https://wa.me/8003245515"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-gray-600 hover:text-green-600 transition-colors"

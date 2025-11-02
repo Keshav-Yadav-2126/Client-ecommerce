@@ -1,3 +1,4 @@
+// models/Order.js
 import mongoose from "mongoose";
 
 const OrderSchema = new mongoose.Schema({
@@ -16,8 +17,10 @@ const OrderSchema = new mongoose.Schema({
     addressId: String,
     address: String,
     city: String,
+    state: String,        // ✅ ADDED
     pincode: String,
     phone: String,
+    mobileNo: String,     // ✅ ADDED
     notes: String,
   },
   orderStatus: String,
@@ -28,6 +31,8 @@ const OrderSchema = new mongoose.Schema({
   orderUpdateDate: Date,
   paymentId: String,
   payerId: String,
+  customerName: String,   // ✅ ADDED to store customer name
+  customerEmail: String,  // ✅ ADDED (optional)
 });
 
 const orderModel = mongoose.model("Order", OrderSchema);

@@ -13,18 +13,42 @@ import { handleUploadImage, handleUploadVideo, upload } from "../../helpers/clou
 // ===== BANNER MANAGEMENT =====
 export const addBanner = async (req, res) => {
   try {
+    console.log("=== Add Banner Request ===");
+    console.log("Request body:", req.body);
+    
     const { title, description, image, link, buttonText, order } = req.body;
 
-    const banner = new Banner({
-      title,
-      description,
-      image,
-      link,
-      buttonText,
+    // Validation - only image is required
+    if (!image || !image.trim()) {
+      console.error("❌ Missing image");
+      return res.status(400).json({
+        success: false,
+        message: "Image is required",
+      });
+    }
+
+    console.log("✅ Creating banner with data:", {
+      title: title || "N/A",
+      description: description || "N/A",
+      image: image.substring(0, 50) + "...",
+      link: link || "N/A",
+      buttonText: buttonText || "N/A",
       order: order || 0,
     });
 
+    const banner = new Banner({
+      title: title ? title.trim() : "",
+      description: description ? description.trim() : "",
+      image: image.trim(),
+      link: link ? link.trim() : "",
+      buttonText: buttonText ? buttonText.trim() : "",
+      order: parseInt(order) || 0,
+      isActive: true,
+    });
+
     await banner.save();
+    
+    console.log("✅ Banner saved successfully:", banner._id);
 
     res.status(201).json({
       success: true,
@@ -32,10 +56,22 @@ export const addBanner = async (req, res) => {
       data: banner,
     });
   } catch (error) {
-    console.error("Add banner error:", error);
+    console.error("❌ === Add Banner Error ===");
+    console.error("Error name:", error.name);
+    console.error("Error message:", error.message);
+    console.error("Error stack:", error.stack);
+    
+    if (error.name === 'ValidationError') {
+      console.error("Validation errors:", error.errors);
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed: " + Object.values(error.errors).map(e => e.message).join(", "),
+      });
+    }
+    
     res.status(500).json({
       success: false,
-      message: "Error adding banner",
+      message: "Error adding banner: " + error.message,
     });
   }
 };

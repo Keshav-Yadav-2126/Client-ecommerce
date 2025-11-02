@@ -5,7 +5,7 @@ import FeaturedProductsSection from "@/components/homepage/FeaturedProductsSecti
 import AboutUsSection from "@/components/homepage/AboutUsSection";
 import CustomerReviewsSection from "@/components/homepage/CustomerReviewsSection";
 import VideosSection from "@/components/homepage/VideosSection";
-import { Truck, X } from "lucide-react";
+import { Truck, X, MessageCircle } from "lucide-react";
 import axios from "axios";
 
 const ShoppingHome = () => {
@@ -14,7 +14,12 @@ const ShoppingHome = () => {
   const [aboutUsContent, setAboutUsContent] = useState("");
   const [customerReviews, setCustomerReviews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showShippingBanner, setShowShippingBanner] = useState(true); // ✅ NEW: Banner visibility state
+  const [showShippingBanner, setShowShippingBanner] = useState(true);
+  const [showWhatsAppTooltip, setShowWhatsAppTooltip] = useState(false);
+
+  // ✅ WhatsApp Configuration - UPDATE THIS WITH YOUR NUMBER
+  const whatsappNumber = import.meta.env.VITE_API_WHATSAPP_NUMBER; // Replace with your WhatsApp number (with country code, no + or spaces)
+  const whatsappMessage = "Hello! I'm interested in your products."; // Default message
 
   useEffect(() => {
     async function fetchHomepageData() {
@@ -34,7 +39,7 @@ const ShoppingHome = () => {
         console.log("Featured products response:", featuredRes.data);
         setFeaturedProducts(featuredRes.data?.data || []);
 
-        // Fetch about us - FIXED ENDPOINT
+        // Fetch about us
         const aboutRes = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/admin/homepage/about/get`
         );
@@ -49,12 +54,10 @@ const ShoppingHome = () => {
         setCustomerReviews(reviewsRes.data?.data || []);
       } catch (err) {
         console.error("Error loading homepage:", err);
-        // Log specific error details
         if (err.response) {
           console.error("Response error:", err.response.data);
           console.error("Status:", err.response.status);
         }
-        // Set empty arrays to prevent undefined errors
         setCarouselImages([]);
         setFeaturedProducts([]);
         setAboutUsContent("");
@@ -66,6 +69,13 @@ const ShoppingHome = () => {
 
     fetchHomepageData();
   }, []);
+
+  // ✅ WhatsApp Click Handler
+  const handleWhatsAppClick = () => {
+    const encodedMessage = encodeURIComponent(whatsappMessage);
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+    window.open(whatsappUrl, '_blank');
+  };
 
   if (loading) {
     return (
@@ -80,10 +90,9 @@ const ShoppingHome = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 via-yellow-50 to-orange-50">
-      {/* ✅ NEW: Free Shipping Banner */}
+      {/* Free Shipping Banner */}
       {showShippingBanner && (
         <div className="relative bg-gradient-to-r from-green-600 via-green-500 to-emerald-600 text-white py-3 px-4 shadow-lg overflow-hidden">
-          {/* Animated background pattern */}
           <div className="absolute inset-0 opacity-10">
             <div className="absolute inset-0 bg-repeat" style={{
               backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
@@ -92,16 +101,13 @@ const ShoppingHome = () => {
           </div>
 
           <div className="relative flex items-center justify-center gap-2 sm:gap-3 text-center">
-            {/* Truck Icon with animation */}
             <Truck className="w-5 h-5 sm:w-6 sm:h-6 animate-bounce" />
             
-            {/* Main Text */}
             <p className="text-xs sm:text-sm md:text-base font-bold tracking-wide">
               🎉 FREE SHIPPING on orders above ₹1,500 
               <span className="hidden sm:inline ml-2">| Shop Now & Save!</span>
             </p>
 
-            {/* Close Button */}
             <button
               onClick={() => setShowShippingBanner(false)}
               className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 hover:bg-white/20 rounded-full p-1 transition-all duration-200"
@@ -111,7 +117,6 @@ const ShoppingHome = () => {
             </button>
           </div>
 
-          {/* Optional: Animated sliding text for mobile */}
           <div className="sm:hidden mt-1 text-center">
             <p className="text-[10px] opacity-90 animate-pulse">
               Limited time offer!
@@ -120,13 +125,64 @@ const ShoppingHome = () => {
         </div>
       )}
 
-      {/* Hero Carousel - Only render if we have banners */}
+      {/* ✅ WhatsApp Floating Button - Responsive for Mobile & Desktop */}
+      <div className="fixed bottom-28 right-3 sm:bottom-6 sm:right-6 z-40">
+        <div className="relative">
+          {/* Tooltip */}
+          {showWhatsAppTooltip && (
+            <div className="absolute bottom-full right-0 mb-2 px-2 py-1 sm:px-3 sm:py-2 bg-gray-900 text-white text-[10px] sm:text-xs rounded-lg whitespace-nowrap shadow-lg animate-fade-in z-50">
+              Chat with us
+              <div className="absolute bottom-0 right-3 transform translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900"></div>
+            </div>
+          )}
+
+          {/* WhatsApp Button */}
+          <button
+            onClick={handleWhatsAppClick}
+            onMouseEnter={() => setShowWhatsAppTooltip(true)}
+            onMouseLeave={() => setShowWhatsAppTooltip(false)}
+            className="group relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-110 active:scale-95"
+            aria-label="Contact us on WhatsApp"
+          >
+            {/* Ripple Effect */}
+            <span className="absolute inset-0 rounded-full bg-green-400 opacity-0 group-hover:opacity-30 group-hover:scale-150 transition-all duration-500"></span>
+            
+            {/* Pulse Animation */}
+            <span className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-20"></span>
+            
+            {/* WhatsApp Icon */}
+            <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white relative z-10 group-hover:rotate-12 transition-transform duration-300" />
+            
+            {/* Online Indicator */}
+            <span className="absolute top-0 right-0 w-2 h-2 sm:w-3 sm:h-3 bg-green-400 border-2 border-white rounded-full animate-pulse"></span>
+          </button>
+
+          {/* Mobile-friendly tap animation */}
+          <style>{`
+            @keyframes fade-in {
+              from {
+                opacity: 0;
+                transform: translateY(10px);
+              }
+              to {
+                opacity: 1;
+                transform: translateY(0);
+              }
+            }
+            .animate-fade-in {
+              animation: fade-in 0.3s ease-out;
+            }
+          `}</style>
+        </div>
+      </div>
+
+      {/* Hero Carousel */}
       {carouselImages.length > 0 && <HeroCarousel images={carouselImages} />}
 
       {/* Category Section */}
       <CategorySection />
 
-      {/* Featured Products Section - Only render if we have products */}
+      {/* Featured Products Section */}
       {featuredProducts.length > 0 && (
         <section className="px-4 sm:px-8 md:px-12 lg:px-20 xl:px-28 py-12 sm:py-16">
           <div className="text-center mb-8 sm:mb-12">
@@ -139,13 +195,13 @@ const ShoppingHome = () => {
         </section>
       )}
 
-      {/* About Us Section - Only render if we have content */}
+      {/* About Us Section */}
       <AboutUsSection about={aboutUsContent} />
 
       {/* Videos Section */}
       <VideosSection />
 
-      {/* Customer Reviews Section - Only render if we have reviews */}
+      {/* Customer Reviews Section */}
       <CustomerReviewsSection reviews={customerReviews} />
     </div>
   );
