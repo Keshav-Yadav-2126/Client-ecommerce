@@ -75,7 +75,7 @@ const AboutUsSection = ({ about = "" }) => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mt-6 sm:mt-12">
               <div className="bg-white/80 backdrop-blur rounded-lg sm:rounded-xl p-3 sm:p-6 shadow-lg hover:shadow-xl transition-shadow">
                 <div className="text-xl sm:text-3xl md:text-4xl font-bold text-green-600 mb-1 sm:mb-2">
-                  10K+
+                  1K+
                 </div>
                 <div className="text-gray-600 text-xs sm:text-sm md:text-base">
                   Happy Customers
@@ -83,7 +83,7 @@ const AboutUsSection = ({ about = "" }) => {
               </div>
               <div className="bg-white/80 backdrop-blur rounded-lg sm:rounded-xl p-3 sm:p-6 shadow-lg hover:shadow-xl transition-shadow">
                 <div className="text-xl sm:text-3xl md:text-4xl font-bold text-green-600 mb-1 sm:mb-2">
-                  500+
+                  20+
                 </div>
                 <div className="text-gray-600 text-xs sm:text-sm md:text-base">
                   Products
