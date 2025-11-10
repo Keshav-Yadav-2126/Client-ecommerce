@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Mail, MessageCircle, Phone } from "lucide-react";
+import { Facebook, Instagram, Mail, MessageCircle, Phone, Youtube } from "lucide-react";
 import React, { useState } from "react";
 
 const Footer = () => {
@@ -37,7 +37,7 @@ const Footer = () => {
                 <MessageCircle className="w-4 h-4 text-green-600" />
               </a>
               <a
-                href="https://instagram.com/pachory"
+                href="https://www.instagram.com/pachoryfarm?igsh=eWI3dGJ1YmZlYTJ3"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-9 h-9 bg-pink-100 rounded-full flex items-center justify-center hover:bg-pink-200 transition-all"
@@ -45,12 +45,20 @@ const Footer = () => {
                 <Instagram className="w-4 h-4 text-pink-600" />
               </a>
               <a
-                href="https://facebook.com/pachory"
+                href="https://www.facebook.com/share/1FzSMr7yjv/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center hover:bg-blue-200 transition-all"
               >
                 <Facebook className="w-4 h-4 text-blue-600" />
+              </a>
+              <a
+                href="https://youtube.com/@pachoryfarm?si=5lVYB70oKk-usrzK"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center hover:bg-blue-200 transition-all"
+              >
+                <Youtube className="w-4 h-4 text-red-600" />
               </a>
             </div>
           </div>
@@ -218,6 +226,14 @@ const Footer = () => {
                 >
                   <Facebook className="w-5 h-5 text-blue-600" />
                 </a>
+                <a
+                  href="https://youtube.com/@pachoryfarm?si=5lVYB70oKk-usrzK"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center hover:bg-blue-200 transition-all hover:scale-110 shadow-sm"
+                >
+                  <Youtube className="w-5 h-5 text-red-600" />
+                </a>  
               </div>
             </div>
           </div>

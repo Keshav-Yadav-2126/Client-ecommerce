@@ -1,27 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Address from "@/components/shopping-view/Address";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, MapPin } from "lucide-react";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { MapPin } from "lucide-react";
 
 const AddressPage = () => {
   const navigate = useNavigate();
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
 
-  const handleContinue = () => {
+  // Auto-redirect when address is selected
+  useEffect(() => {
     if (currentSelectedAddress) {
       // Store selected address in localStorage for next page
       localStorage.setItem("selectedAddress", JSON.stringify(currentSelectedAddress));
-      // Check if this is a buy now flow or cart checkout
-      const buyNowProduct = localStorage.getItem("buyNowProduct");
-      if (buyNowProduct) {
-        navigate("/shop/order-summary");
-      } else {
-        navigate("/shop/order-summary");
-      }
+      
+      // Redirect to order summary page
+      navigate("/shop/order-summary");
     }
-  };
+  }, [currentSelectedAddress, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-yellow-50 to-cream-50 py-8">
@@ -42,25 +38,13 @@ const AddressPage = () => {
               <CardTitle className="text-xl">Delivery Address</CardTitle>
             </div>
           </CardHeader>
-          <CardContent className="p-6">
+          <div className="p-6">
             <Address
               selectedId={currentSelectedAddress?._id}
               setCurrentSelectedAddress={setCurrentSelectedAddress}
             />
-          </CardContent>
+          </div>
         </Card>
-
-        {/* Continue Button */}
-        <div className="mt-8 flex justify-center">
-          <Button
-            onClick={handleContinue}
-            disabled={!currentSelectedAddress}
-            className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white px-8 py-3 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            Continue to Order Summary
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
-        </div>
       </div>
     </div>
   );

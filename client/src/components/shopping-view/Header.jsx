@@ -13,7 +13,7 @@ import {
   Search,
 } from "lucide-react";
 import React, { useEffect, useState, useRef, useCallback } from "react";
-// import pachoryLogo from "@/assets/pachory-logo1.png";
+import pachoryLogo from "@/assets/pachory-logo1.png";
 import {
   Link,
   useLocation,
@@ -59,8 +59,6 @@ const ShoppingHeader = () => {
   const hasFetchedCart = useRef(false);
   const isUpdatingCart = useRef(false);
 
-  // const pachoryLogo = "/assets/pachory-logo.png";
-
   const handleOpenCartSheet = useCallback((value) => {
     if (isUpdatingCart.current) return;
     setOpenCartSheet(value);
@@ -71,9 +69,6 @@ const ShoppingHeader = () => {
     logoutUser();
     navigate("/auth/login", { replace: true });
   }
-
-  // Header.jsx - MenuItems function fix
-  // Header.jsx - Replace the MenuItems function with this fixed version
 
   function MenuItems({ excludeSearch = false }) {
     function handleNavigate(getCurrentMenuItem) {
@@ -252,83 +247,81 @@ const ShoppingHeader = () => {
     );
   }
 
-  // Header.jsx - Update the SidebarUserDropdown function
-
-function SidebarUserDropdown() {
-  // ✅ NEW: Check if user is authenticated
-  if (!user) {
-    // Show login option for unauthenticated users in sidebar
-    return (
-      <div className="mt-6 pt-6 border-t border-gray-200">
-        <div 
-          onClick={() => {
-            setMobileMenuOpen(false);
-            navigate("/auth/login");
-          }}
-          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors duration-200"
-        >
-          <Avatar className="bg-gradient-to-r from-gray-400 to-gray-500 w-10 h-10">
-            <AvatarFallback className="bg-gradient-to-r from-gray-400 to-gray-500 text-white font-extrabold">
-              <User className="w-5 h-5" />
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex-1">
-            <p className="text-sm font-medium text-gray-800">Guest User</p>
-            <p className="text-xs text-gray-600">Login to your account</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Original authenticated user dropdown
-  return (
-    <div className="mt-6 pt-6 border-t border-yellow-200">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg cursor-pointer hover:bg-yellow-100 transition-colors duration-200">
-            <Avatar className="bg-gradient-to-r from-yellow-500 to-yellow-600 w-10 h-10">
-              <AvatarFallback className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-extrabold">
-                {user?.name?.[0]?.toUpperCase() || "U"}
+  function SidebarUserDropdown() {
+    // ✅ Check if user is authenticated
+    if (!user) {
+      // Show login option for unauthenticated users in sidebar
+      return (
+        <div className="mt-6 pt-6 border-t border-gray-200">
+          <div 
+            onClick={() => {
+              setMobileMenuOpen(false);
+              navigate("/auth/login");
+            }}
+            className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+          >
+            <Avatar className="bg-gradient-to-r from-gray-400 to-gray-500 w-10 h-10">
+              <AvatarFallback className="bg-gradient-to-r from-gray-400 to-gray-500 text-white font-extrabold">
+                <User className="w-5 h-5" />
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-800">{user?.name}</p>
-              <p className="text-xs text-gray-600">View Account</p>
+              <p className="text-sm font-medium text-gray-800">Guest User</p>
+              <p className="text-xs text-gray-600">Login to your account</p>
             </div>
           </div>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          side="bottom"
-          className="w-56 bg-white border-yellow-200 shadow-lg"
-        >
-          <DropdownMenuLabel className="text-gray-800 font-semibold">
-            Account Options
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator className="bg-yellow-200" />
-          <DropdownMenuItem
-            onClick={() => {
-              setMobileMenuOpen(false);
-              navigate("/shop/account");
-            }}
-            className="text-gray-700 hover:bg-yellow-50 cursor-pointer transition-colors duration-200"
+        </div>
+      );
+    }
+
+    // Original authenticated user dropdown
+    return (
+      <div className="mt-6 pt-6 border-t border-yellow-200">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg cursor-pointer hover:bg-yellow-100 transition-colors duration-200">
+              <Avatar className="bg-gradient-to-r from-yellow-500 to-yellow-600 w-10 h-10">
+                <AvatarFallback className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-extrabold">
+                  {user?.name?.[0]?.toUpperCase() || "U"}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-gray-800">{user?.name}</p>
+                <p className="text-xs text-gray-600">View Account</p>
+              </div>
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            side="bottom"
+            className="w-56 bg-white border-yellow-200 shadow-lg"
           >
-            <User className="mr-2 h-4 w-4 text-yellow-600" />
-            Account
-          </DropdownMenuItem>
-          <DropdownMenuSeparator className="bg-yellow-200" />
-          <DropdownMenuItem
-            onClick={handleLogout}
-            className="text-gray-700 hover:bg-yellow-50 cursor-pointer transition-colors duration-200"
-          >
-            <LogOut className="mr-2 h-4 w-4 text-red-600" />
-            Logout
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-  );
-}
+            <DropdownMenuLabel className="text-gray-800 font-semibold">
+              Account Options
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator className="bg-yellow-200" />
+            <DropdownMenuItem
+              onClick={() => {
+                setMobileMenuOpen(false);
+                navigate("/shop/account");
+              }}
+              className="text-gray-700 hover:bg-yellow-50 cursor-pointer transition-colors duration-200"
+            >
+              <User className="mr-2 h-4 w-4 text-yellow-600" />
+              Account
+            </DropdownMenuItem>
+            <DropdownMenuSeparator className="bg-yellow-200" />
+            <DropdownMenuItem
+              onClick={handleLogout}
+              className="text-gray-700 hover:bg-yellow-50 cursor-pointer transition-colors duration-200"
+            >
+              <LogOut className="mr-2 h-4 w-4 text-red-600" />
+              Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -347,18 +340,12 @@ function SidebarUserDropdown() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-full max-w-64 bg-gradient-to-b from-white to-yellow-50 shadow-2xl border-r-4 border-yellow-200">
-              <div className="mb-8">
-                <div className="flex items-center gap-3 mb-6 p-4 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-xl shadow-sm">
-                  <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg animate-pulse">
-                    <House className="h-7 w-7 text-white" />
-                  </div>
-                  <div>
-                    <span className="font-bold text-2xl bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
-                      Pachory
-                    </span>
-                    <p className="text-xs text-gray-700 font-medium">Organic Nutrition</p>
-                  </div>
-                </div>
+              <div className="mb-8 mt-5 w-[100px]">
+                <img
+                  src={pachoryLogo}
+                  alt="Pachory Logo"
+                  className="h-12 w-full object-cover"
+                />
               </div>
               <div className="px-2">
                 <MenuItems excludeSearch={true} />
@@ -368,21 +355,15 @@ function SidebarUserDropdown() {
           </Sheet>
 
           {/* Logo */}
-            <Link
+          <Link
             to="/shop/home"
-            className="flex-1 text-center lg:flex-none lg:text-left flex items-center gap-3 hover:scale-105 transition-transform duration-200"
+            className="hover:scale-105 transition-transform duration-200 w-[100px]"
           >
-            {/* <img
-              src= {pachoryLogo} // ✅ place your logo in public/assets/logo.png
+            <img
+              src={pachoryLogo}
               alt="Pachory Logo"
-              className="h-10 w-auto rounded-lg shadow-md border border-yellow-200 p-1 bg-white"
-            /> */}
-            <div>
-              <span className="font-bold text-xl bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
-                Pachory
-              </span>
-              <p className="text-xs text-gray-600">Organic Nutrition</p>
-            </div>
+              className="h-12 w-full object-cover"
+            />
           </Link>
 
           {/* Mobile Right: Search and Cart */}
