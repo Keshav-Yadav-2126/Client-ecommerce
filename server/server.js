@@ -25,21 +25,28 @@ const app = express();
 const httpServer = createServer(app);
 
 // Initialize Socket.IO
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.CLIENT_BASE_URL,
+];
+
 const io = new Server(httpServer, {
-    cors: {
-        origin: process.env.CLIENT_BASE_URL,
-        methods: ["GET", "POST"],
-        credentials: true
-    }
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
 });
 
 // Make io accessible to routes
 app.set('io', io);
 
-app.use(cors({
-    origin: process.env.CLIENT_BASE_URL,
-    credentials: true
-}));
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 
 app.use(cookieParser());
 app.use(express.json({ limit: '100mb' }));
